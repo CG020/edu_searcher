@@ -1,0 +1,10 @@
+nav {
+  font-size: 0.9em;
+  font-weight: normal;
+  font-family: monospace;
+}
+
+.nav-item {
+  font-size: 1.0em;
+  font-weight: lighter;
+}
