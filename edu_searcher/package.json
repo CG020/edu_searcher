@@ -10,13 +10,18 @@
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4",
-    "proxy": "http://localhost:5000"
+    "proxy": "http://localhost:5000",
+    "axios": "^1.7.2",
+    "bootstrap": "^5.3.3",
+    "concurrently": "^8.2.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start:frontend": "react-scripts start",
+    "start:backend": "cd backend && .\\venv\\Scripts\\activate && python app.py"
   },
   "eslintConfig": {
     "extends": [

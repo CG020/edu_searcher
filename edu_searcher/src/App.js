@@ -2,19 +2,22 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import Navbar from './components/Navbar/Navbar';
+import axios from 'axios';
 
 
 function App() {
     const [query, setQuery] = useState('');
-    const [sourceType, setSourceType] = useState('');
-    const [level, setLevel] = useState('');
     const [results, setResults] = useState([]);
 
-    const fetchResources = async () => {
-        const response = await fetch(`/api/fetch_resources?query=${query}&sourceType=${sourceType}&level=${level}`);
-        const data = await response.json();
-        setResults(data);
-    };
+    const searchResources = async () => {
+        try {
+          const response = await axios.get('http://127.0.0.1:5000/api/search', { params: { query } });
+          setResults(response.data);
+        } catch (error) {
+          console.error('Error fetching resources:', error);
+        }
+      };
+    
 
     return (
         <div>
@@ -24,10 +27,13 @@ function App() {
 
             <p className='section-label'>search</p>
             
-            <input type="text" placeholder="I want to learn about..." value={query} onChange={e => setQuery(e.target.value)} />
-            <input type="text" placeholder="Source type" value={sourceType} onChange={e => setSourceType(e.target.value)} />
-            <input type="text" placeholder="Level" value={level} onChange={e => setLevel(e.target.value)} />
-            <button className="search-button" onClick={fetchResources}>Search</button>
+            <input
+                type="text"
+                placeholder="Search for tutorials..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+            />
+            <button className="search-button" onClick={searchResources}>Search</button>
             <ul>
                 {results.map((result, index) => (
                     <li key={index}>
