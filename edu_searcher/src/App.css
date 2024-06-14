@@ -36,3 +36,33 @@
     transform: rotate(360deg);
   }
 }
+
+.section-label {
+  margin-left: 20px;
+  margin-top: 20px;
+  font-family: monospace;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #414043;
+  opacity: 0.9;
+  width: 5em;
+  font-size: 1em;
+}
+
+input {
+  padding: 5px;
+  width: 13em;
+  border-radius: 13px;
+  font-family: monospace;
+}
+
+.input-placeholder {
+  font-family: monospace;
+}
+
+.search-button {
+  border-radius: 10px;
+  font-family: monospace;
+}

@@ -21,11 +21,13 @@ function App() {
           <div className='header-section'>
             <Navbar message='edu space' tabs={['search','library','history','options']}/>
             </div>
+
+            <p className='section-label'>search</p>
             
             <input type="text" placeholder="I want to learn about..." value={query} onChange={e => setQuery(e.target.value)} />
-            <input type="text" placeholder="Source Type" value={sourceType} onChange={e => setSourceType(e.target.value)} />
+            <input type="text" placeholder="Source type" value={sourceType} onChange={e => setSourceType(e.target.value)} />
             <input type="text" placeholder="Level" value={level} onChange={e => setLevel(e.target.value)} />
-            <button onClick={fetchResources}>Search</button>
+            <button className="search-button" onClick={fetchResources}>Search</button>
             <ul>
                 {results.map((result, index) => (
                     <li key={index}>
@@ -34,6 +36,9 @@ function App() {
                     </li>
                 ))}
             </ul>
+            
+            <br></br><br></br><br></br>
+            <p className='section-label'>library</p>
         </div>
     );
 }
