@@ -3,10 +3,21 @@ import requests
 
 app = Flask(__name__)
 
-GOOGLE_API_KEY = 'TEMP'
-GOOGLE_CX = 'TEMP'
-UDEMY_CLIENT_ID = 'TEMP'
-UDEMY_CLIENT_SECRET = 'TEMP'
+API_KEYS = {
+    'edx': 'YOUR_EDX_API_KEY',
+    'khan_academy': 'YOUR_KHAN_ACADEMY_API_KEY',
+    'udacity': 'YOUR_UDACITY_API_KEY',
+    'futurelearn': 'YOUR_FUTURELEARN_API_KEY',
+    'codecademy': 'YOUR_CODEC_ACADEMY_API_KEY',
+}
+
+API_ENDPOINTS = {
+    'edx': 'https://api.edx.org/catalog/v1/courses',
+    'khan_academy': 'https://www.khanacademy.org/api/v1/topic/DOMAIN/courses',
+    'udacity': 'https://catalog-api.udacity.com/v1/courses',
+    'futurelearn': 'https://www.futurelearn.com/api/v1/courses',
+    'codecademy': 'https://www.codecademy.com/api/v1/courses'
+}
 
 @app.route('/api/fetch_resources', methods=['GET'])
 def fetch_resources():
@@ -14,25 +25,40 @@ def fetch_resources():
     source_type = request.args.get('sourceType')
     level = request.args.get('level')
 
-    google_url = f"https://www.googleapis.com/customsearch/v1?q={query}&cx={GOOGLE_CX}&key={GOOGLE_API_KEY}"
-    udemy_url = f"https://www.udemy.com/api-2.0/courses/?search={query}"
+    results = []
 
-    google_response = requests.get(google_url)
-    google_results = google_response.json().get('items', [])
+    # edX
+    edx_response = requests.get(API_ENDPOINTS['edx'], params={'search': query, 'api_key': API_KEYS['edx']})
+    if edx_response.status_code == 200:
+        results += edx_response.json().get('results', [])
 
-    udemy_response = requests.get(udemy_url, headers={
-        'Authorization': f'Basic {GOOGLE_API_KEY}:{UDEMY_CLIENT_SECRET}'
-    })
-    udemy_results = udemy_response.json().get('results', [])
+    # Khan Academy
+    khan_response = requests.get(API_ENDPOINTS['khan_academy'].replace('DOMAIN', query))
+    if khan_response.status_code == 200:
+        results += khan_response.json()
 
-    combined_results = google_results + udemy_results
+    # Udacity
+    udacity_response = requests.get(API_ENDPOINTS['udacity'])
+    if udacity_response.status_code == 200:
+        results += udacity_response.json().get('courses', [])
 
+    # FutureLearn
+    futurelearn_response = requests.get(API_ENDPOINTS['futurelearn'], params={'search': query, 'api_key': API_KEYS['futurelearn']})
+    if futurelearn_response.status_code == 200:
+        results += futurelearn_response.json().get('courses', [])
+
+    # Codecademy
+    codecademy_response = requests.get(API_ENDPOINTS['codecademy'])
+    if codecademy_response.status_code == 200:
+        results += codecademy_response.json().get('courses', [])
+
+    # Filter results if needed
     if source_type:
-        combined_results = [result for result in combined_results if result.get('source') == source_type]
+        results = [result for result in results if result.get('source') == source_type]
     if level:
-        combined_results = [result for result in combined_results if result.get('level') == level]
+        results = [result for result in results if result.get('level') == level]
 
-    return jsonify(combined_results)
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.run(debug=True)
