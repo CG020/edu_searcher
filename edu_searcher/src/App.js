@@ -1,4 +1,5 @@
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import Navbar from './components/Navbar/Navbar';
 
@@ -18,7 +19,7 @@ function App() {
     return (
         <div>
           <div className='header-section'>
-            <Navbar message='learn space' tabs={['profile','bio','projects','gallery']}/>
+            <Navbar message='edu space' tabs={['search','library','history','options']}/>
             </div>
             
             <input type="text" placeholder="I want to learn about..." value={query} onChange={e => setQuery(e.target.value)} />
