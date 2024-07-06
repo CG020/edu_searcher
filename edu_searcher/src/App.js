@@ -11,8 +11,12 @@ function App() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const searchResources = async () => {
+        setIsLoading(true);
+        setError(null);
         try {
             const response = await axios.get('http://127.0.0.1:5000/api/search', { 
                 params: { query, page } 
@@ -26,8 +30,11 @@ function App() {
             setHasSearched(true);
         } catch (error) {
             console.error('Error fetching resources:', error);
+            setError('An error occurred while fetching results. Please try again.');
             setResults([]);
             setHasMore(false);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -54,6 +61,13 @@ function App() {
         setPage(1);
         setHasMore(false);
         setHasSearched(false);
+        setError(null);
+    };
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
     };
 
     const toggleFilter = (source) => {
@@ -83,75 +97,84 @@ function App() {
     const sources = [...new Set(results.map(result => result.source))];
 
     return (
-      <div>
-          <div className='header-section'>
-              <Navbar message='edu space' tabs={['search','library','history','options']}/>
-          </div>
+        <div>
+            <div className='header-section'>
+                <Navbar message='edu space' tabs={['search','library','history','options']}/>
+            </div>
 
-          <div className="container">
-              <p className='section-label'>search</p>
-              
-              <div className="search-container">
-                  <input
-                      type="text"
-                      placeholder="Search for tutorials..."
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                  />
-                  <button className="search-button" onClick={handleSearch}>Search</button>
-                  <button className="clear-button" onClick={handleClear}>Clear</button>
-              </div>
+            <div className="container">
+                <p className='section-label'>search</p>
+                
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Search for tutorials..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                    />
+                    <button className="search-button" onClick={handleSearch}>Search</button>
+                    <button className="clear-button" onClick={handleClear}>Clear</button>
+                </div>
 
-              {hasSearched && (
-                  <div className="filter-buttons">
-                      {sources.map(source => (
-                          <button
-                              key={source}
-                              onClick={() => toggleFilter(source)}
-                              className={`filter-button ${activeFilters.includes(source) ? 'active' : ''}`}
-                          >
-                              {getSourceIcon(source)} {source}
-                          </button>
-                      ))}
-                  </div>
-              )}
+                {hasSearched && (
+                    <div className="filter-buttons">
+                        {sources.map(source => (
+                            <button
+                                key={source}
+                                onClick={() => toggleFilter(source)}
+                                className={`filter-button ${activeFilters.includes(source) ? 'active' : ''}`}
+                            >
+                                {getSourceIcon(source)} {source}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
-              <div className="results-container">
-                  <div className="results-column">
-                      {filteredResults.filter((_, index) => index % 2 === 0).map((result, index) => (
-                          <div key={index * 2} className="result-item">
-                              <div className="source-label">
-                                  <span>{getSourceIcon(result.source)}</span>
-                                  <span>{result.source}</span>
-                              </div>
-                              <h3>{result.title}</h3>
-                              <a href={result.link}>Learn more</a>
-                          </div>
-                      ))}
-                  </div>
-                  <div className="results-column">
-                      {filteredResults.filter((_, index) => index % 2 !== 0).map((result, index) => (
-                          <div key={index * 2 + 1} className="result-item">
-                              <div className="source-label">
-                                  <span>{getSourceIcon(result.source)}</span>
-                                  <span>{result.source}</span>
-                              </div>
-                              <h3>{result.title}</h3>
-                              <a href={result.link}>Learn more</a>
-                          </div>
-                      ))}
-                  </div>
-              </div>
+                {isLoading && <div className="loading">Loading...</div>}
+                {error && <div className="error">{error}</div>}
+                {!isLoading && !error && filteredResults.length === 0 && hasSearched && (
+                    <div className="no-results">No results found. Try a different search term.</div>
+                )}
 
-              {hasSearched && hasMore && (
-                  <button className="see-more-button" onClick={handleSeeMore}>See More</button>
-              )}
-              
-              <br></br><br></br><br></br>
-              <p className='section-label'>library</p>
-          </div>
-      </div>
-  );
+                {filteredResults.length > 0 && (
+                    <div className="results-container">
+                        <div className="results-column">
+                            {filteredResults.filter((_, index) => index % 2 === 0).map((result, index) => (
+                                <div key={index * 2} className="result-item">
+                                    <div className="source-label">
+                                        <span>{getSourceIcon(result.source)}</span>
+                                        <span>{result.source}</span>
+                                    </div>
+                                    <h3>{result.title}</h3>
+                                    <a href={result.link} target="_blank" rel="noopener noreferrer">Learn more</a>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="results-column">
+                            {filteredResults.filter((_, index) => index % 2 !== 0).map((result, index) => (
+                                <div key={index * 2 + 1} className="result-item">
+                                    <div className="source-label">
+                                        <span>{getSourceIcon(result.source)}</span>
+                                        <span>{result.source}</span>
+                                    </div>
+                                    <h3>{result.title}</h3>
+                                    <a href={result.link} target="_blank" rel="noopener noreferrer">Learn more</a>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {hasSearched && hasMore && (
+                    <button className="see-more-button" onClick={handleSeeMore}>See More</button>
+                )}
+                
+                <br></br><br></br><br></br>
+                <p className='section-label'>library</p>
+            </div>
+        </div>
+    );
 }
 
 export default App;
