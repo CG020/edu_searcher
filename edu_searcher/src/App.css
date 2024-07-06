@@ -38,7 +38,7 @@
 }
 
 .section-label {
-  margin-left: 20px;
+  margin-left: 10px;
   margin-top: 20px;
   font-family: monospace;
   text-align: center;
@@ -56,6 +56,7 @@ input {
   width: 13em;
   border-radius: 13px;
   font-family: monospace;
+  margin-left: 10px;
 }
 
 .input-placeholder {
@@ -65,6 +66,7 @@ input {
 .search-button {
   border-radius: 10px;
   font-family: monospace;
+  margin-left: 5px;
 }
 
 .results-list {
@@ -114,9 +116,9 @@ input {
 
 .see-more-button {
   display: block;
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: hwb(210 37% 61%);
   color: white;
   border: none;
   border-radius: 5px;
@@ -125,4 +127,90 @@ input {
 
 .see-more-button:hover {
   background-color: #0056b3;
+}
+
+.clear-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #6a5f5e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  background-color: #4b4747;
+}
+
+.App {
+  text-align: center;
+}
+
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.search-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.results-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.results-column {
+  flex: 1;
+  max-width: 45%;
+  display: flex;
+  flex-direction: column;
+}
+
+.result-item {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  height: 150px;
+  overflow: hidden;
+  font-size: 0.9em;
+}
+
+.result-item h3 {
+  font-size: 1em;
+  margin: 0 0 10px 0;
+}
+
+.result-item a {
+  margin-top: auto;
+  font-size: 0.9em;
+}
+
+.source-label {
+  display: inline-block;
+  background-color: #f0f0f0;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.7em;
+  margin-bottom: 5px;
+}
+
+@media (max-width: 768px) {
+  .results-container {
+    flex-direction: column;
+  }
+
+  .results-column {
+    max-width: 100%;
+  }
 }
