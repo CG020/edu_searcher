@@ -113,8 +113,10 @@ function App() {
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyPress={handleKeyPress}
                     />
-                    <button className="search-button" onClick={handleSearch}>Search</button>
-                    <button className="clear-button" onClick={handleClear}>Clear</button>
+                    <div>
+                        <button className="search-button" onClick={handleSearch}>Search</button>
+                        <button className="clear-button" onClick={handleClear}>Clear</button>
+                    </div>
                 </div>
 
                 {hasSearched && (
