@@ -7,7 +7,7 @@
 
 .section-label {
   display: inline-block;
-  margin-left: 20px;
+  margin-left: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
   font-family: monospace;
@@ -18,7 +18,7 @@
   background-color: #414043;
   color: white;
   opacity: 0.9;
-  font-size: 1em;
+  font-size: 1.2em;
   transition: all 0.3s ease;
 }
 
