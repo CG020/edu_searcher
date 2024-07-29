@@ -9,8 +9,10 @@ import logging
 app = Flask(__name__)
 CORS(app)
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
 
+# Use environment variable for API key
 YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
 if not YOUTUBE_API_KEY:
     logging.error("YouTube API key not found. Please set the YOUTUBE_API_KEY environment variable.")
@@ -22,7 +24,10 @@ def search_resources():
     query = request.args.get('query')
     page = int(request.args.get('page', 1))
     
+    logging.info(f"Received search request. Query: {query}, Page: {page}")
+    
     if not query:
+        logging.warning("No query provided")
         return jsonify({'error': 'No query provided'}), 400
 
     try:
@@ -30,17 +35,25 @@ def search_resources():
             youtube_future = executor.submit(search_youtube, query)
             khan_academy_future = executor.submit(search_khan_academy, query)
         
-        all_results = youtube_future.result() + khan_academy_future.result()
+        youtube_results = youtube_future.result()
+        khan_academy_results = khan_academy_future.result()
         
+        logging.info(f"YouTube results: {len(youtube_results)}, Khan Academy results: {len(khan_academy_results)}")
+        
+        all_results = youtube_results + khan_academy_results
+        
+        # Paginate results
         start = (page - 1) * RESULTS_PER_PAGE
         end = start + RESULTS_PER_PAGE
         paginated_results = all_results[start:end]
         
-        return jsonify({
+        response = {
             'results': paginated_results,
             'total_results': len(all_results),
             'has_more': end < len(all_results)
-        })
+        }
+        logging.info(f"Sending response: {len(paginated_results)} results")
+        return jsonify(response)
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({'error': 'An error occurred while processing your request'}), 500
@@ -55,6 +68,7 @@ def search_youtube(query):
         response = requests.get(youtube_url)
         response.raise_for_status()
         youtube_results = response.json().get('items', [])
+        logging.info(f"YouTube API returned {len(youtube_results)} results")
         return [{
             'title': item['snippet']['title'],
             'link': f'https://www.youtube.com/watch?v={item["id"]["videoId"]}',
@@ -81,6 +95,7 @@ def search_khan_academy(query):
                 'description': description,
                 'source': 'Khan Academy'
             })
+        logging.info(f"Khan Academy search returned {len(results)} results")
         return results
     except requests.RequestException as e:
         logging.error(f"Error fetching Khan Academy results: {str(e)}")
